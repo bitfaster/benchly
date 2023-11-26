@@ -1,13 +1,15 @@
 # benchly 📈
-Generate plots for BenchmarkDotNet.
+Generate plots for [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) using [Plotly.NET](https://github.com/plotly/Plotly.NET/).
 
 # Getting started
     
-BitFaster.Caching is installed from NuGet:
+Benchly is installed from NuGet:
 
 `dotnet add package Benchly`
 
 ## Annotate benchmarks
+
+Add plot exporter attributes to your benchmark, similar to the built in exporters:
 
 ```cs
     [BarPlot]
