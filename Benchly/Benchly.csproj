@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<LangVersion>10.0</LangVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<Copyright>Copyright © Alex Peck $([System.DateTime]::Now.ToString(yyyy))</Copyright>
+	<PackageProjectUrl></PackageProjectUrl>
+	<RepositoryUrl>https://github.com/bitfaster/BitFaster.Caching</RepositoryUrl>
+	<PackageTags>BenchmarkDotNet;Plot;Chart</PackageTags>
+	<PackageId>Benchly</PackageId>
+	<Version>0.5.0</Version>
+	<AssemblyVersion>0.5.0.0</AssemblyVersion>
+	<FileVersion>0.5.0.0</FileVersion>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.10" />
+    <PackageReference Include="Plotly.NET.ImageExport" Version="5.0.1" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+</Project>
