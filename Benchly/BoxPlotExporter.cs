@@ -2,12 +2,8 @@
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
-using Microsoft.Diagnostics.Runtime.Utilities;
 using Plotly.NET;
 using Plotly.NET.ImageExport;
-using System.Numerics;
-using static System.Reflection.Metadata.BlobBuilder;
-using Chart = Plotly.NET.CSharp.Chart;
 
 namespace Benchly
 {
@@ -31,7 +27,8 @@ namespace Benchly
 
             var plots = summary.Reports.Select(r => new BoxPlotInfo(r)).ToList();
             string timeUnit = ConvertTime(plots);
-            var boxplots = plots.Select(p => Chart.BoxPlot<string, double, string>(X: p.Names, Y: p.Data, Name: p.Job, Jitter: 0.1, BoxPoints: StyleParam.BoxPoints.All));
+
+            var boxplots = plots.Select(p => Chart2D.Chart.BoxPlot<string, double, string>(X: p.Names, Y: p.Data, Name: p.Job, Jitter: 0.1, BoxPoints: StyleParam.BoxPoints.All));
 
             //foreach (var r in summary.Reports)
             //{

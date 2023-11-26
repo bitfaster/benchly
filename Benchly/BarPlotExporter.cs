@@ -2,8 +2,8 @@
 using BenchmarkDotNet.Reports;
 using Plotly.NET.ImageExport;
 using BenchmarkDotNet.Loggers;
-
-using Chart = Plotly.NET.CSharp.Chart;
+using Plotly.NET;
+using System;
 
 namespace Benchly
 {
@@ -30,7 +30,7 @@ namespace Benchly
             var x = summary.Reports.Select(r => r.AllMeasurements.Where(m => m.IterationMode == BenchmarkDotNet.Engines.IterationMode.Workload).Select(m => m.Nanoseconds));
 
             //var fn = $"{benchName} ({job.Key})";
-            var chart = Chart.Column<double, string, string>(mean, names, MarkerColor: Plotly.NET.Color.fromKeyword(Plotly.NET.ColorKeyword.IndianRed))
+            var chart = Chart2D.Chart.Column<double, string, string, double, double>(mean, names, MarkerColor: Plotly.NET.Color.fromKeyword(Plotly.NET.ColorKeyword.IndianRed))
                 //.WithYErrorStyle<double, IConvertible>(stdDev)
                 .WithAxisTitles("Time (ms)")
                 .WithoutVerticalGridlines()
