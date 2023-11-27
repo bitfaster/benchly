@@ -5,7 +5,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<Copyright>Copyright © Alex Peck $([System.DateTime]::Now.ToString(yyyy))</Copyright>
+	<Authors>Alex Peck</Authors>
+    <Copyright>Copyright © Alex Peck $([System.DateTime]::Now.ToString(yyyy))</Copyright>
 	<PackageProjectUrl></PackageProjectUrl>
 	<RepositoryUrl>https://github.com/bitfaster/benchly</RepositoryUrl>
 	<PackageTags>BenchmarkDotNet;Plot;Chart</PackageTags>
