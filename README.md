@@ -46,3 +46,8 @@ Plots are then generated in the results directory when running the benchmarks:
 
 ![Benchly Benchmarks Md5VsSha256-boxplot](https://github.com/bitfaster/benchly/assets/12851828/f906002c-57cb-4d82-9fca-266160efa5e9)
 ![Benchly Benchmarks Md5VsSha256-barplot](https://github.com/bitfaster/benchly/assets/12851828/c9b2abe3-c9a3-4bfa-8678-7fe11dca468a)
+
+# Credits
+
+Based on this repo that shows how to export benchmark data to Excel:
+https://github.com/CodeTherapist/BenchmarkDotNetXlsxExporter
