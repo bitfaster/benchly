@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Exporters;
-using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
 using Plotly.NET;
@@ -30,20 +29,6 @@ namespace Benchly
 
             var boxplots = plots.Select(p => Chart2D.Chart.BoxPlot<string, double, string>(X: p.Names, Y: p.Data, Name: p.Job, Jitter: 0.1, BoxPoints: StyleParam.BoxPoints.All));
 
-            //foreach (var r in summary.Reports)
-            //{
-            //   // var job = r.BenchmarkCase.Job.DisplayInfo;
-            //   // var name = r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo;
-            //   //// var data = r.AllMeasurements.Where(m => m.IterationMode == BenchmarkDotNet.Engines.IterationMode.Workload).Select(m => m.Nanoseconds).ToArray();
-
-            //   // var (data, timeUnit) = ConvertTime(r);
-
-            //   // var names = Enumerable.Range(0, data.Length).Select(_ => name).ToArray();
-
-            //    var cc = Chart.BoxPlot<string, double, string>(X: names, Y: data, Name: job, Jitter: 0.1, BoxPoints: StyleParam.BoxPoints.All);
-            //    boxplots.Add(cc);
-            //}
-
             Chart.Combine(boxplots)
                 .WithoutVerticalGridlines()
                 .WithAxisTitles($"Time ({timeUnit})")
@@ -57,21 +42,21 @@ namespace Benchly
         // https://github.com/dotnet/BenchmarkDotNet/blob/e4d37d03c0b1ef14e7bde224970bd0fc547fd95a/src/BenchmarkDotNet/Templates/BuildPlots.R#L63-L75
         private static string ConvertTime(List<BoxPlotInfo> plots)
         {
-            var min = plots.SelectMany(p => p.Data).Max();
+            var max = plots.SelectMany(p => p.Data).Max();
 
             string timeUnit = "ns";
             
-            if (min > 1_000_000_000)
+            if (max > 1_000_000_000)
             {
                 Reduce(plots, 0.000000001);
                 timeUnit = "s";
             }
-            else if (min > 1_000_000)
+            else if (max > 1_000_000)
             {
                 Reduce(plots, 0.000001);
                 timeUnit = "ms";
             }
-            else if (min > 1_000)
+            else if (max > 1_000)
             {
                 Reduce(plots, 0.001);
                 timeUnit = "μs";
@@ -102,7 +87,7 @@ namespace Benchly
             {
                 Job = r.BenchmarkCase.Job.DisplayInfo;
                 var name = r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo;
-                Data = r.AllMeasurements.Where(m => m.IterationMode == BenchmarkDotNet.Engines.IterationMode.Workload).Select(m => m.Nanoseconds).ToArray();
+                Data = r.AllMeasurements.Where(m => m.IterationMode == BenchmarkDotNet.Engines.IterationMode.Workload).Select(m => m.GetAverageTime().Nanoseconds).ToArray();
                 Names = Enumerable.Range(0, Data.Length).Select(_ => name).ToArray();
             }
 
