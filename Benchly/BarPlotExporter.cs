@@ -7,7 +7,7 @@ using System;
 
 namespace Benchly
 {
-    public class BarPlotExporter : IExporter
+    internal class BarPlotExporter : IExporter
     {
         private readonly PlotInfo plotInfo = new PlotInfo();
 

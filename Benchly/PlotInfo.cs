@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Benchly
 {
-    public class PlotInfo
+    internal class PlotInfo
     {
         public string? Title { get; set; }
     }
