@@ -3,6 +3,7 @@ using BenchmarkDotNet.Reports;
 using Plotly.NET.ImageExport;
 using BenchmarkDotNet.Loggers;
 using Plotly.NET;
+using Plotly.NET.LayoutObjects;
 
 namespace Benchly
 {
@@ -101,8 +102,27 @@ namespace Benchly
                 gridCharts.Add(Chart.Combine(charts));
             }
 
+            // https://github.com/plotly/Plotly.NET/issues/387
+            double xWidth = 1.0d / byParam.Count();
+            double xMidpoint = xWidth / 2.0d;
+            double[] xs = byParam.Select((_, index) => xMidpoint + (xWidth * index)).ToArray();
+
+            var annotations = byParam.Select((p, index) => Annotation.init<double, double, string, string, string, string, string, string, string, string>(
+                X: xs[index],
+                Y: 1,
+                XAnchor: StyleParam.XAnchorPosition.Center,
+                ShowArrow: false,
+                YAnchor: StyleParam.YAnchorPosition.Bottom,
+                Text: p.Key.ToString(),
+                XRef: "paper",
+                YRef: "paper"
+            ));
+
             Chart
                 .Grid<IEnumerable<GenericChart.GenericChart>>(1, byParam.Count()).Invoke(gridCharts)
+                .WithAnnotations(annotations)
+                .WithoutVerticalGridlines()
+                .WithLayout(title)
                 .SaveSVG(file, Width: 1000, Height: 600);
 
             return new[] { file + ".svg" };
