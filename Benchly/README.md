@@ -34,7 +34,11 @@ Add plot exporter attributes to your benchmark, similar to the built in exporter
 
 Plots are then generated in the results directory when running the benchmarks:
 
-![image](https://github.com/bitfaster/benchly/assets/12851828/7628b105-f367-4be2-8032-ee4f318b4e85)
-
-![Benchly Benchmarks Md5VsSha256-boxplot](https://github.com/bitfaster/benchly/assets/12851828/f906002c-57cb-4d82-9fca-266160efa5e9)
-![Benchly Benchmarks Md5VsSha256-barplot](https://github.com/bitfaster/benchly/assets/12851828/c9b2abe3-c9a3-4bfa-8678-7fe11dca468a)
+```
+  // * Export *
+  BenchmarkDotNet.Artifacts\results\Benchly.Benchmarks.Md5VsSha256-report.csv
+  BenchmarkDotNet.Artifacts\results\Benchly.Benchmarks.Md5VsSha256-report-github.md
+  BenchmarkDotNet.Artifacts\results\Benchly.Benchmarks.Md5VsSha256-report.html
+  BenchmarkDotNet.Artifacts\results\Benchly.Benchmarks.Md5VsSha256-boxplot.svg
+  BenchmarkDotNet.Artifacts\results\Benchly.Benchmarks.Md5VsSha256-barplot.svg
+```
