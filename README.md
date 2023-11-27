@@ -1,8 +1,17 @@
-# 📈 benchly 
+# 📊 benchly 
 
 Generate plots for [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) using [Plotly.NET](https://github.com/plotly/Plotly.NET/).
 
 [![NuGet version](https://badge.fury.io/nu/benchly.svg)](https://badge.fury.io/nu/benchly) ![Nuget](https://img.shields.io/nuget/dt/benchly) 
+
+Benchly supports 4 different plots:
+
+- Bar plot: shows the relative latency of results.
+- Box plot: shows the relative the variability of results.
+- Histogram: shows distribution of results.
+- Timeline: shows the latency trend through time.
+
+Benchly uses Plotly.NET. Ironically for a performance measurement tool, whilst convenient this is not a performant approach to generating plots. Internally, FSharp invokes plotly.js running inside a headless instance of chromium managed by pupetteer. The first time benchly runs, chromium will be downloaded into the bin directory causing short delay.
 
 # Getting started
     
@@ -12,7 +21,7 @@ Benchly is installed from NuGet:
 
 ## Annotate benchmarks
 
-Add plot exporter attributes to your benchmark, similar to the built in exporters:
+Add plot exporter attributes to your benchmark:
 
 ```cs
     [BoxPlot(Title = "Box Plot", Colors = "skyblue,slateblue")]
@@ -40,7 +49,7 @@ Add plot exporter attributes to your benchmark, similar to the built in exporter
     }
 ```
 
-Plots are then generated in the results directory when running the benchmarks:
+Plots are written to the results directory after running the benchmarks, like the built in exporters:
 
 ![image](https://github.com/bitfaster/benchly/assets/12851828/7628b105-f367-4be2-8032-ee4f318b4e85)
 
