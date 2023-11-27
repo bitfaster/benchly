@@ -9,7 +9,7 @@ namespace Benchly
 {
     // Based on https://github.com/CodeTherapist/BenchmarkDotNetXlsxExporter
     // https://pvk.ca/Blog/2012/07/03/binary-search-star-eliminates-star-branch-mispredictions/
-    public class BoxPlotExporter : IExporter
+    internal class BoxPlotExporter : IExporter
     {
         private readonly PlotInfo plotInfo = new PlotInfo();
 

@@ -3,34 +3,25 @@ using BenchmarkDotNet.Configs;
 
 namespace Benchly
 {
+    /// <summary>
+    /// Export a box plot.
+    /// </summary>
     public sealed class BoxPlotAttribute : ExporterConfigBaseAttribute
     {
         private readonly PlotInfo plotInfo = new PlotInfo();
 
-        public string? Title 
+        /// <summary>
+        /// Gets or sets the title of the plot.
+        /// </summary>
+        public string Title 
         { 
             get => plotInfo.Title;
             set => plotInfo.Title = value;
         }
 
-        // colorscheme as list of colors
-
-        // width
-        // height
-
-        // include error bars
-
-        // include distribution
-
-        // group by column: job, size? Or have different attrib for grouping, then can apply multiple attribs
-        // E.g.
-        // [BarPlot]
-        // [JobBarPlot]
-        // [BoxPlot]
-        // [JobBoxPlot]
-        // [BarPlot(GroupBy="Size")]
-        // [DistributionPlot]
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BoxPlotAttribute"/> class.
+        /// </summary>
         public BoxPlotAttribute() 
             : base()
         {
@@ -38,26 +29,29 @@ namespace Benchly
         }
     }
 
+    /// <summary>
+    /// Export a bar plot.
+    /// </summary>
     public sealed class BarPlotAttribute : ExporterConfigBaseAttribute
     {
         private readonly PlotInfo plotInfo = new PlotInfo();
 
-        public string? Title
+        /// <summary>
+        /// Gets or sets the title of the plot.
+        /// </summary>
+        public string Title
         {
             get => plotInfo.Title;
             set => plotInfo.Title = value;
         }
 
+        /// <summary>
+        ///  Initializes a new instance of the <see cref="BarPlotAttribute"/> class.
+        /// </summary>
         public BarPlotAttribute()
             : base()
         {
             this.Config.AddExporter(new BarPlotExporter(this.plotInfo));
         }
-    }
-
-    [BoxPlot(Title = "asdas")]
-    public class BenchmarkFake
-    { 
-    
     }
 }
