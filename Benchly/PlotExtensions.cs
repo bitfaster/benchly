@@ -47,5 +47,10 @@ namespace Benchly
             Layout layout = Layout.init<IConvertible>(BoxMode: BoxMode.Group);
             return chart.WithLayout(layout);
         }
+
+        public static GenericChart.GenericChart WithLegendGroup(this GenericChart.GenericChart chart, string groupName, bool showLegend)
+        {
+            return chart.WithTraceInfo(LegendGroup: new FSharpOption<string>(groupName), ShowLegend: new FSharpOption<bool>(showLegend));
+        }
     }
 }

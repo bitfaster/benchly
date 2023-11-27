@@ -81,6 +81,8 @@ namespace Benchly
             // y axis only on first chart
             var gridCharts = new List<GenericChart.GenericChart>();
 
+            var colors = ColorMap.GetJobColors(summary, this.Info);
+
             var byParam = summary.Reports.Select(r => new
             {
                 param = r.BenchmarkCase.Parameters.PrintInfo,
@@ -89,19 +91,24 @@ namespace Benchly
                 mean = r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0
             }).GroupBy(r => r.param);
 
+            int paramCount = 0;
             foreach (var param in byParam)
             {
                 var charts = new List<GenericChart.GenericChart>();
                 var jobs = param.GroupBy(p => p.job);
 
-                // For this to group, we must invoke Chart2D.Chart.Column once per group
+                // Group the legends, then only show the first for each group
+                // https://stackoverflow.com/questions/60751008/sharing-same-legends-for-subplots-in-plotly
                 foreach (var job in jobs)
                 {
-                    var chart2 = Chart2D.Chart.Column<double, string, string, double, double>(job.Select(j => j.mean), job.Select(j => j.name).ToArray(), Name: job.Key);
+                    var chart2 = Chart2D.Chart
+                        .Column<double, string, string, double, double>(job.Select(j => j.mean), job.Select(j => j.name).ToArray(), Name: job.Key, MarkerColor: colors[job.Key])
+                        .WithLegendGroup(job.Key, paramCount == 0);
                     charts.Add(chart2);
                 }
 
                 gridCharts.Add(Chart.Combine(charts));
+                paramCount++;
             }
 
             // https://github.com/plotly/Plotly.NET/issues/387
