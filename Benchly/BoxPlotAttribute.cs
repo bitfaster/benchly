@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
 
 namespace Benchly
 {
@@ -20,11 +19,22 @@ namespace Benchly
         }
 
         /// <summary>
+        /// Colors defined by a comma separated list of web color keywords, e.g. White -> "white" (see //https://www.w3.org/TR/2011/REC-SVG11-20110816/types.html#ColorKeywords)
+        /// </summary>
+        public string Colors
+        {
+            get => plotInfo.Colors;
+            set => plotInfo.Colors = value;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="BoxPlotAttribute"/> class.
         /// </summary>
         public BoxPlotAttribute() 
-            : base(new BoxPlotExporter(new PlotInfo()))
+            : base(new BoxPlotExporter())
         {
+            var exp = Config.GetExporters().OfType<BoxPlotExporter>().Single();
+            exp.Info = plotInfo;
         }
     }
 
@@ -45,11 +55,22 @@ namespace Benchly
         }
 
         /// <summary>
+        /// Colors defined by a comma separated list of web color keywords, e.g. White -> "white" (see //https://www.w3.org/TR/2011/REC-SVG11-20110816/types.html#ColorKeywords)
+        /// </summary>
+        public string Colors
+        {
+            get => plotInfo.Colors;
+            set => plotInfo.Colors = value;
+        }
+
+        /// <summary>
         ///  Initializes a new instance of the <see cref="BarPlotAttribute"/> class.
         /// </summary>
         public BarPlotAttribute()
-            : base(new BarPlotExporter(new PlotInfo()))
+            : base(new BarPlotExporter())
         {
+            var exp = Config.GetExporters().OfType<BarPlotExporter>().Single();
+            exp.Info = plotInfo;
         }
     }
 }
