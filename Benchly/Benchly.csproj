@@ -7,7 +7,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<Copyright>Copyright © Alex Peck $([System.DateTime]::Now.ToString(yyyy))</Copyright>
 	<PackageProjectUrl></PackageProjectUrl>
-	<RepositoryUrl>https://github.com/bitfaster/BitFaster.Caching</RepositoryUrl>
+	<RepositoryUrl>https://github.com/bitfaster/benchly</RepositoryUrl>
 	<PackageTags>BenchmarkDotNet;Plot;Chart</PackageTags>
 	<PackageId>Benchly</PackageId>
 	<Version>0.5.0</Version>
