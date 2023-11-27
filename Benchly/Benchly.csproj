@@ -7,18 +7,29 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<Copyright>Copyright © Alex Peck $([System.DateTime]::Now.ToString(yyyy))</Copyright>
 	<PackageProjectUrl></PackageProjectUrl>
-	<RepositoryUrl>https://github.com/bitfaster/BitFaster.Caching</RepositoryUrl>
+	<RepositoryUrl>https://github.com/bitfaster/benchly</RepositoryUrl>
 	<PackageTags>BenchmarkDotNet;Plot;Chart</PackageTags>
 	<PackageId>Benchly</PackageId>
 	<Version>0.5.0</Version>
 	<AssemblyVersion>0.5.0.0</AssemblyVersion>
 	<FileVersion>0.5.0.0</FileVersion>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<IncludeSource>True</IncludeSource>
+	<IncludeSymbols>True</IncludeSymbols>
+	<EmbedUntrackedSources>true</EmbedUntrackedSources>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.10" />
     <PackageReference Include="Plotly.NET.ImageExport" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+    <Pack>True</Pack>
+    <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
