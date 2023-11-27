@@ -30,17 +30,15 @@ namespace Benchly
             var jobs = plots.GroupBy(p => p.Job);
 
             // https://www.geeksforgeeks.org/how-to-create-grouped-box-plot-in-plotly/
+            // For this to group, we must invoke Chart2D.Chart.BoxPlot once per group
             var charts = new List<GenericChart.GenericChart>();
-            var names = jobs.SelectMany(j => j.SelectMany(x => x.Names)).ToArray();
             foreach (var job in jobs)
             {
-                //var names = job.SelectMany(p => p.Names).ToArray();
+                var names = job.SelectMany(p => p.Names).ToArray();
                 var data = job.SelectMany(p => p.Data).ToArray();
 
                 charts.Add(Chart2D.Chart.BoxPlot<string, double, string>(X: names, Y: data, Name: job.Key, Jitter: 0.1, BoxPoints: StyleParam.BoxPoints.All));
             }
-
-            //var boxplots = plots.Select(p => Chart2D.Chart.BoxPlot<string, double, string>(X: p.Names, Y: p.Data, Name: p.Job, Jitter: 0.1, BoxPoints: StyleParam.BoxPoints.All));
 
             Chart.Combine(charts)
                 .WithoutVerticalGridlines()
@@ -101,7 +99,7 @@ namespace Benchly
             {
                 Job = r.BenchmarkCase.Job.ResolvedId;
                 var name = r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo;
-                Data = r.AllMeasurements.Where(m => m.IterationMode == BenchmarkDotNet.Engines.IterationMode.Workload).Select(m => m.GetAverageTime().Nanoseconds).ToArray();
+                Data = r.AllMeasurements.Where(m => m.IterationMode == BenchmarkDotNet.Engines.IterationMode.Workload && m.IterationStage == BenchmarkDotNet.Engines.IterationStage.Actual).Select(m => m.GetAverageTime().Nanoseconds).ToArray();
                 Names = Enumerable.Range(0, Data.Length).Select(_ => name).ToArray();
             }
 

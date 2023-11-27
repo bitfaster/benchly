@@ -36,6 +36,7 @@ namespace Benchly
                 mean = r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0
             }).GroupBy(r => r.job);
 
+            // For this to group, we must invoke Chart2D.Chart.Column once per group
             foreach (var job in jobs)
             {
                 var chart2 = Chart2D.Chart.Column<double, string, string, double, double>(job.Select(j => j.mean), job.Select(j => j.name).ToArray(), Name: job.Key, MarkerColor: colors[job.Key]);
