@@ -1,6 +1,7 @@
 ﻿using Microsoft.FSharp.Core;
 using Plotly.NET.LayoutObjects;
 using Plotly.NET;
+using static Plotly.NET.StyleParam;
 
 namespace Benchly
 {
@@ -30,6 +31,12 @@ namespace Benchly
             FSharpOption<Title> t = Title.init(Text: title, X: 0.5, Font: font);
             FSharpOption<Color> plotBGColor = new FSharpOption<Color>(Color.fromKeyword(ColorKeyword.WhiteSmoke));
             Layout layout = Layout.init<IConvertible>(PaperBGColor: plotBGColor, PlotBGColor: plotBGColor, Title: t);
+            return chart.WithLayout(layout);
+        }
+
+        public static GenericChart.GenericChart WithGroupBox(this GenericChart.GenericChart chart)
+        {
+            Layout layout = Layout.init<IConvertible>(BoxMode: BoxMode.Group);
             return chart.WithLayout(layout);
         }
     }

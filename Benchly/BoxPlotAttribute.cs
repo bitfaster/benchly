@@ -23,9 +23,8 @@ namespace Benchly
         /// Initializes a new instance of the <see cref="BoxPlotAttribute"/> class.
         /// </summary>
         public BoxPlotAttribute() 
-            : base()
+            : base(new BoxPlotExporter(new PlotInfo()))
         {
-            this.Config.AddExporter(new BoxPlotExporter(this.plotInfo));
         }
     }
 
@@ -49,9 +48,8 @@ namespace Benchly
         ///  Initializes a new instance of the <see cref="BarPlotAttribute"/> class.
         /// </summary>
         public BarPlotAttribute()
-            : base()
+            : base(new BarPlotExporter(new PlotInfo()))
         {
-            this.Config.AddExporter(new BarPlotExporter(this.plotInfo));
         }
     }
 }
