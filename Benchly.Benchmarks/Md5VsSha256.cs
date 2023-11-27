@@ -6,6 +6,7 @@ namespace Benchly.Benchmarks
 {
     [BoxPlot(Title = "Box Plot", Colors = "skyblue,slateblue")]
     [BarPlot(Title = "Bar Plot", Colors = "skyblue,slateblue")]
+    [Histogram]
     [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]
     public class Md5VsSha256
     {

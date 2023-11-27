@@ -14,6 +14,14 @@ namespace Benchly
             return chart.WithXAxisStyle(Title.init(Font: font)).WithYAxisStyle(Title.init(yt, Font: font));
         }
 
+        public static GenericChart.GenericChart WithAxisTitles(this GenericChart.GenericChart chart, string xTitle, string yTitle)
+        {
+            var font = new FSharpOption<Font>(Font.init(Size: new FSharpOption<double>(16)));
+            FSharpOption<string> xt = new FSharpOption<string>(xTitle);
+            FSharpOption<string> yt = new FSharpOption<string>(yTitle);
+            return chart.WithXAxisStyle(Title.init(xt, Font: font)).WithYAxisStyle(Title.init(yt, Font: font));
+        }
+
         public static GenericChart.GenericChart WithoutVerticalGridlines(this GenericChart.GenericChart chart)
         {
             var gridColor = new FSharpOption<Color>(Color.fromKeyword(ColorKeyword.Gainsboro));

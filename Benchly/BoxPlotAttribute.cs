@@ -73,4 +73,18 @@ namespace Benchly
             exp.Info = plotInfo;
         }
     }
+
+    /// <summary>
+    /// Export a histogram plot.
+    /// </summary>
+    public sealed class HistogramAttribute : ExporterConfigBaseAttribute
+    {
+        /// <summary>
+        ///  Initializes a new instance of the <see cref="BarPlotAttribute"/> class.
+        /// </summary>
+        public HistogramAttribute()
+            : base(new HistogramExporter())
+        {
+        }
+    }
 }
