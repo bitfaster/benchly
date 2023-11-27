@@ -6,9 +6,11 @@ using Plotly.NET.ImageExport;
 
 namespace Benchly
 {
-    internal class HistogramExporter : IExporter
+    internal class TimelineExporter : IExporter
     {
-        public string Name => nameof(HistogramExporter);
+        public PlotInfo Info { get; set; } = new PlotInfo();
+
+        public string Name => nameof(TimelineExporter);
 
         public IEnumerable<string> ExportToFiles(Summary summary, ILogger consoleLogger)
         {
@@ -22,13 +24,15 @@ namespace Benchly
                 }
 
                 var title = $"{r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo} ({r.BenchmarkCase.Job.ResolvedId})";
-                var file = Path.Combine(summary.ResultsDirectoryPath, baseName + "-hist-" + title);
+                var file = Path.Combine(summary.ResultsDirectoryPath, baseName + "-timeline-" + title);
 
                 var data = r.AllMeasurements.Where(m => m.IterationMode == BenchmarkDotNet.Engines.IterationMode.Workload && m.IterationStage == BenchmarkDotNet.Engines.IterationStage.Actual).Select(m => m.GetAverageTime().Nanoseconds).ToArray();
 
-                Chart2D.Chart.Histogram<double, double, string>(X: data)
+                var iters = Enumerable.Range(0, data.Length);
+
+                Chart2D.Chart.Line<int, double, string>(x: iters, y: data)
                     .WithoutVerticalGridlines()
-                    .WithAxisTitles("Latency (ns)", "Frequency")
+                    .WithAxisTitles("Iteration", "Latency (ns)")
                     .WithLayout(title)
                     .SaveSVG(file, Width: 1000, Height: 600);
 

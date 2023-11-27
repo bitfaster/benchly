@@ -14,9 +14,11 @@ namespace Benchly.UnitTests
             var barPlotExporter = new BarPlotExporter();
             barPlotExporter.Info.Title = "Bar Plot";
             var histExporter = new HistogramExporter();
+            var timelineExporter = new TimelineExporter();
             var files1 = boxPlotExporter.ExportToFiles(summary, NullLogger.Instance);
             var files2 = barPlotExporter.ExportToFiles(summary, NullLogger.Instance);
             var files3 = histExporter.ExportToFiles(summary, NullLogger.Instance);
+            var files4 = timelineExporter.ExportToFiles(summary, NullLogger.Instance);
         }
     }
 }

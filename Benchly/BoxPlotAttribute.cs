@@ -80,10 +80,24 @@ namespace Benchly
     public sealed class HistogramAttribute : ExporterConfigBaseAttribute
     {
         /// <summary>
-        ///  Initializes a new instance of the <see cref="BarPlotAttribute"/> class.
+        ///  Initializes a new instance of the <see cref="HistogramAttribute"/> class.
         /// </summary>
         public HistogramAttribute()
             : base(new HistogramExporter())
+        {
+        }
+    }
+
+    /// <summary>
+    /// Export a histogram plot.
+    /// </summary>
+    public sealed class TimelineAttribute : ExporterConfigBaseAttribute
+    {
+        /// <summary>
+        ///  Initializes a new instance of the <see cref="TimelineAttribute"/> class.
+        /// </summary>
+        public TimelineAttribute()
+            : base(new TimelineExporter())
         {
         }
     }
