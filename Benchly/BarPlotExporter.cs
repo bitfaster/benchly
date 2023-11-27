@@ -4,6 +4,8 @@ using Plotly.NET.ImageExport;
 using BenchmarkDotNet.Loggers;
 using Plotly.NET;
 using System;
+using BenchmarkDotNet.Jobs;
+using System.Xml.Linq;
 
 namespace Benchly
 {
@@ -21,24 +23,33 @@ namespace Benchly
         public IEnumerable<string> ExportToFiles(Summary summary, ILogger consoleLogger)
         {
             var title = this.plotInfo.Title ?? summary.Title;
-            var file = Path.Combine(summary.ResultsDirectoryPath, summary.Title);
+            var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-barplot");
 
-            var jobs = summary.Reports.Select(r => r.BenchmarkCase.Job.DisplayInfo);
-            var names = summary.Reports.Select(r => r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo).ToArray();
-            var mean = summary.Reports.Select(r => r.BuildResult.IsBuildSuccess ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0);
+            var charts = new List<GenericChart.GenericChart>();
 
-            var x = summary.Reports.Select(r => r.AllMeasurements.Where(m => m.IterationMode == BenchmarkDotNet.Engines.IterationMode.Workload).Select(m => m.Nanoseconds));
+            var colors = GetColors(summary);
 
-            //var fn = $"{benchName} ({job.Key})";
-            var chart = Chart2D.Chart.Column<double, string, string, double, double>(mean, names, MarkerColor: Plotly.NET.Color.fromKeyword(Plotly.NET.ColorKeyword.IndianRed))
-                //.WithYErrorStyle<double, IConvertible>(stdDev)
+            var jobs = summary.Reports.Select(r => new 
+            { 
+                job = r.BenchmarkCase.Job.ResolvedId, 
+                name = r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo,
+                mean = r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0
+            }).GroupBy(r => r.job);
+
+            foreach (var job in jobs)
+            {
+                var chart2 = Chart2D.Chart.Column<double, string, string, double, double>(job.Select(j => j.mean), job.Select(j => j.name).ToArray(), Name: job.Key, MarkerColor: colors[job.Key]);
+                charts.Add(chart2);
+            }
+
+            var chart = Chart.Combine(charts)
                 .WithAxisTitles("Time (ms)")
                 .WithoutVerticalGridlines()
                 .WithLayout(title);
 
             chart.SaveSVG(file, Width: 1000, Height: 600);
 
-            return new[] { file };
+            return new[] { file + ".svg" };
         }
 
         // internal measurements are in nanos
@@ -51,6 +62,21 @@ namespace Benchly
         public void ExportToLog(Summary summary, ILogger logger)
         {
             logger.WriteLine("Generated BarPlot");
+        }
+
+        private Dictionary<string, Color> GetColors(Summary summary) 
+        {
+            var jobs = summary.Reports.Select(r => r.BenchmarkCase.Job.ResolvedId).Distinct().ToList();
+
+            var colorMap = new Dictionary<string, Color>();
+
+            List<ColorKeyword> colorList = new List<ColorKeyword>() { ColorKeyword.FireBrick, ColorKeyword.IndianRed, ColorKeyword.Salmon };
+            for (int i = 0; i < jobs.Count; i++)
+            {
+                colorMap.Add(jobs[i], Color.fromKeyword(colorList[i % 3]));
+            }
+
+            return colorMap;
         }
     }
 }
