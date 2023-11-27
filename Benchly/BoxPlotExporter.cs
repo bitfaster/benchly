@@ -10,22 +10,23 @@ namespace Benchly
     // https://pvk.ca/Blog/2012/07/03/binary-search-star-eliminates-star-branch-mispredictions/
     internal class BoxPlotExporter : IExporter
     {
-        private readonly PlotInfo plotInfo = new PlotInfo();
-
-        public BoxPlotExporter(PlotInfo plotInfo) 
+        public BoxPlotExporter() 
         {
-            this.plotInfo = plotInfo;
         }
+
+        public PlotInfo Info { get; set; } = new PlotInfo();
 
         public string Name => nameof(BoxPlotExporter);
 
         public IEnumerable<string> ExportToFiles(Summary summary, ILogger consoleLogger)
         {
-            var title = this.plotInfo.Title ?? summary.Title;
+            var title = this.Info.Title ?? summary.Title;
             var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-boxplot");
 
             var plots = summary.Reports.Select(r => new BoxPlotInfo(r)).ToList();
             string timeUnit = ConvertTime(plots);
+
+            var colors = ColorMap.GetJobColors(summary, this.Info);
 
             var jobs = plots.GroupBy(p => p.Job);
 
@@ -37,7 +38,7 @@ namespace Benchly
                 var names = job.SelectMany(p => p.Names).ToArray();
                 var data = job.SelectMany(p => p.Data).ToArray();
 
-                charts.Add(Chart2D.Chart.BoxPlot<string, double, string>(X: names, Y: data, Name: job.Key, Jitter: 0.1, BoxPoints: StyleParam.BoxPoints.All));
+                charts.Add(Chart2D.Chart.BoxPlot<string, double, string>(X: names, Y: data, Name: job.Key, Jitter: 0.1, BoxPoints: StyleParam.BoxPoints.All, MarkerColor: colors[job.Key]));
             }
 
             Chart.Combine(charts)

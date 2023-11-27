@@ -3,31 +3,27 @@ using BenchmarkDotNet.Reports;
 using Plotly.NET.ImageExport;
 using BenchmarkDotNet.Loggers;
 using Plotly.NET;
-using System;
-using BenchmarkDotNet.Jobs;
-using System.Xml.Linq;
 
 namespace Benchly
 {
     internal class BarPlotExporter : IExporter
     {
-        private readonly PlotInfo plotInfo = new PlotInfo();
-
-        public BarPlotExporter(PlotInfo plotInfo)
+        public BarPlotExporter()
         {
-            this.plotInfo = plotInfo;
         }
+
+        public PlotInfo Info { get; set; } = new PlotInfo();
 
         public string Name => nameof(BarPlotExporter);
 
         public IEnumerable<string> ExportToFiles(Summary summary, ILogger consoleLogger)
         {
-            var title = this.plotInfo.Title ?? summary.Title;
+            var title = this.Info.Title ?? summary.Title;
             var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-barplot");
 
             var charts = new List<GenericChart.GenericChart>();
 
-            var colors = GetColors(summary);
+            var colors = ColorMap.GetJobColors(summary, this.Info);
 
             var jobs = summary.Reports.Select(r => new 
             { 
@@ -63,21 +59,6 @@ namespace Benchly
         public void ExportToLog(Summary summary, ILogger logger)
         {
             logger.WriteLine("Generated BarPlot");
-        }
-
-        private Dictionary<string, Color> GetColors(Summary summary) 
-        {
-            var jobs = summary.Reports.Select(r => r.BenchmarkCase.Job.ResolvedId).Distinct().ToList();
-
-            var colorMap = new Dictionary<string, Color>();
-
-            List<ColorKeyword> colorList = new List<ColorKeyword>() { ColorKeyword.FireBrick, ColorKeyword.IndianRed, ColorKeyword.Salmon };
-            for (int i = 0; i < jobs.Count; i++)
-            {
-                colorMap.Add(jobs[i], Color.fromKeyword(colorList[i % 3]));
-            }
-
-            return colorMap;
         }
     }
 }

@@ -1,16 +1,11 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Benchly.Benchmarks
 {
-    [BoxPlot]
-    [BarPlot]
+    [BoxPlot(Title = "Box Plot", Colors = "skyblue,slateblue")]
+    [BarPlot(Title = "Bar Plot", Colors = "skyblue,slateblue")]
     [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]
     public class Md5VsSha256
     {

@@ -9,8 +9,10 @@ namespace Benchly.UnitTests
         {
             var bench = new TestBenchmarkRunner();
             var summary = bench.GetSummary();
-            var boxPlotExporter = new BoxPlotExporter(new Benchly.PlotInfo() { Title = "Box Plot" });
-            var barPlotExporter = new BarPlotExporter(new Benchly.PlotInfo() { Title = "Bar Plot" });
+            var boxPlotExporter = new BoxPlotExporter();
+            boxPlotExporter.Info.Title = "Box Plot";
+            var barPlotExporter = new BarPlotExporter();
+            barPlotExporter.Info.Title = "Bar Plot";
             var files1 = boxPlotExporter.ExportToFiles(summary, NullLogger.Instance);
             var files2 = barPlotExporter.ExportToFiles(summary, NullLogger.Instance);
         }
