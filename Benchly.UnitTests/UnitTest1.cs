@@ -1,14 +1,28 @@
 using BenchmarkDotNet.Loggers;
+using BenchmarkDotNet.Reports;
 
 namespace Benchly.UnitTests
 {
     public class UnitTest1
     {
         [Fact]
-        public void Test1()
+        public void TestNoParams()
         {
             var bench = new TestBenchmarkRunner();
-            var summary = bench.GetSummary();
+            var summary = bench.GetSummary<Md5VsSha256>();
+            RunExporters(summary);
+        }
+
+        [Fact]
+        public void TestParams()
+        {
+            var bench = new TestBenchmarkRunner();
+            var summary = bench.GetSummary<Md5VsSha256Params>();
+            RunExporters(summary);
+        }
+
+        private static void RunExporters(Summary summary)
+        {
             var boxPlotExporter = new BoxPlotExporter();
             boxPlotExporter.Info.Title = "Box Plot";
             var barPlotExporter = new BarPlotExporter();
