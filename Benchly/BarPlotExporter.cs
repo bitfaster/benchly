@@ -135,6 +135,7 @@ namespace Benchly
                 .Grid<IEnumerable<GenericChart.GenericChart>>(1, byParam.Count(), Pattern: pattern).Invoke(gridCharts)
                 .WithAnnotations(annotations)
                 .WithoutVerticalGridlines()
+                .WithAxisTitles("Time (ms)")
                 .WithLayout(title)
                 .SaveSVG(file, Width: 1000, Height: 600);
 

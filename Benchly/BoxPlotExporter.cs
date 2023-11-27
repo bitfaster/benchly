@@ -6,20 +6,20 @@ using Plotly.NET.ImageExport;
 
 namespace Benchly
 {
-    // Based on https://github.com/CodeTherapist/BenchmarkDotNetXlsxExporter
     // https://pvk.ca/Blog/2012/07/03/binary-search-star-eliminates-star-branch-mispredictions/
     internal class BoxPlotExporter : IExporter
     {
-        public BoxPlotExporter() 
-        {
-        }
-
         public PlotInfo Info { get; set; } = new PlotInfo();
 
         public string Name => nameof(BoxPlotExporter);
 
         public IEnumerable<string> ExportToFiles(Summary summary, ILogger consoleLogger)
         {
+            if (summary.Reports.Length == 0 || summary.Reports[0].BenchmarkCase.HasParameters)
+            {
+                return Array.Empty<string>();
+            }
+
             var title = this.Info.Title ?? summary.Title;
             var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-boxplot");
 
