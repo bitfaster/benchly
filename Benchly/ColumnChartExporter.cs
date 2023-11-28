@@ -96,7 +96,18 @@ namespace Benchly
                 var title = this.Info.Title ?? summary.Title;
                 var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-" + job.Key + "-columnchart");
 
-                Chart2D.Chart.Column<double, string, string, double, double>(job.Select(j => j.mean), job.Select(j => j.name).ToArray(), Name: job.Key)
+                var colors = ColorMap.GetColorList(Info);
+
+                // make 1 chart per column so that we can color by bar index. Legend is disabled since it is not needed.
+                var charts = job
+                    .Select((j, i) => Chart2D.Chart.Column<double, string, string, double, double>(
+                        new[] { j.mean }, 
+                        new[] { j.name }, 
+                        Name: job.Key, 
+                        MarkerColor: colors[i % colors.Length])
+                    .WithLegendGroup(job.Key, false));
+
+                Chart.Combine(charts)
                     .WithAxisTitles("Time (ms)")
                     .WithoutVerticalGridlines()
                     .WithLayout(title)

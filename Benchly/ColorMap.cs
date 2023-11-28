@@ -5,6 +5,20 @@ namespace Benchly
 {
     internal class ColorMap
     {
+        private static Color[] defaults = new[] { Color.fromKeyword(ColorKeyword.IndianRed), Color.fromKeyword(ColorKeyword.Salmon) };
+
+        internal static Color[] GetColorList(PlotInfo info)
+        {
+            var colors = info.GetColors();
+
+            if (colors.Length == 0)
+            {
+                colors = defaults;
+            }
+
+            return colors;
+        }
+
         internal static Dictionary<string, Color> GetJobColors(Summary summary, PlotInfo info)
         {
             var jobs = summary.Reports.Select(r => r.BenchmarkCase.Job.ResolvedId).Distinct().ToList();
@@ -16,7 +30,7 @@ namespace Benchly
             // give some default colors
             if (colors.Length == 0)
             {
-                colors = new[] { Color.fromKeyword(ColorKeyword.IndianRed), Color.fromKeyword(ColorKeyword.Salmon) };
+                colors = defaults;
             }
 
             for (int i = 0; i < jobs.Count; i++)
