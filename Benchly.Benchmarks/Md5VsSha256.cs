@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 namespace Benchly.Benchmarks
 {
     [BoxPlot(Title = "Box Plot", Colors = "skyblue,slateblue", Height = 800)]
-    [ColumnChart(Title = "Column Chart", Colors = "skyblue,slateblue", Height =800)]
+    [ColumnChart(Title = "Column Chart", Colors = "skyblue,slateblue", Height =800, Output = OutputMode.PerJob)]
     [Histogram(Width=500)]
     [Timeline(Width = 500)]
     [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]

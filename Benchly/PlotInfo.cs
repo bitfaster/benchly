@@ -12,6 +12,8 @@ namespace Benchly
 
         public int Height { get; set; } = 600;
 
+        public OutputMode OutputMode { get; set; } = OutputMode.Combined;
+
         internal Color[] GetColors()
         {
             if (string.IsNullOrEmpty(Colors))
@@ -38,7 +40,9 @@ namespace Benchly
                 return Color.fromHex(x);
             }
 
-            return Color.fromString(x);
+            var keyword = ColorKeyword.ofKeyWord.Invoke(x);
+            var c = Color.fromKeyword(keyword);
+            return c;
         }
     }
 }
