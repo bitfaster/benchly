@@ -8,6 +8,8 @@ namespace Benchly
 {
     internal class HistogramExporter : IExporter
     {
+        public PlotInfo Info { get; set; } = new PlotInfo();
+
         public string Name => nameof(HistogramExporter);
 
         public IEnumerable<string> ExportToFiles(Summary summary, ILogger consoleLogger)
@@ -30,7 +32,7 @@ namespace Benchly
                     .WithoutVerticalGridlines()
                     .WithAxisTitles("Latency (ns)", "Frequency")
                     .WithLayout(title)
-                    .SaveSVG(file, Width: 1000, Height: 600);
+                    .SaveSVG(file, Width: Info.Width, Height: Info.Height);
 
                 files.Add(file + ".svg");
             }

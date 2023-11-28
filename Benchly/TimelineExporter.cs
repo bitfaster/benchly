@@ -34,7 +34,7 @@ namespace Benchly
                     .WithoutVerticalGridlines()
                     .WithAxisTitles("Iteration", "Latency (ns)")
                     .WithLayout(title)
-                    .SaveSVG(file, Width: 1000, Height: 600);
+                    .SaveSVG(file, Width: Info.Width, Height: Info.Height);
 
                 files.Add(file + ".svg");
             }

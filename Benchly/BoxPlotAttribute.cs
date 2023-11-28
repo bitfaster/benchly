@@ -1,14 +1,13 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Exporters;
 
 namespace Benchly
 {
     /// <summary>
     /// Export a box plot.
     /// </summary>
-    public sealed class BoxPlotAttribute : ExporterConfigBaseAttribute
+    public sealed class BoxPlotAttribute : PlotBaseAttribute
     {
-        private readonly PlotInfo plotInfo = new PlotInfo();
-
         /// <summary>
         /// Gets or sets the title of the plot.
         /// </summary>
@@ -39,12 +38,10 @@ namespace Benchly
     }
 
     /// <summary>
-    /// Export a bar plot.
+    /// Export a column chart.
     /// </summary>
-    public sealed class ColumnChartAttribute : ExporterConfigBaseAttribute
+    public sealed class ColumnChartAttribute : PlotBaseAttribute
     {
-        private readonly PlotInfo plotInfo = new PlotInfo();
-
         /// <summary>
         /// Gets or sets the title of the plot.
         /// </summary>
@@ -77,7 +74,7 @@ namespace Benchly
     /// <summary>
     /// Export a histogram plot.
     /// </summary>
-    public sealed class HistogramAttribute : ExporterConfigBaseAttribute
+    public sealed class HistogramAttribute : PlotBaseAttribute
     {
         /// <summary>
         ///  Initializes a new instance of the <see cref="HistogramAttribute"/> class.
@@ -85,19 +82,54 @@ namespace Benchly
         public HistogramAttribute()
             : base(new HistogramExporter())
         {
+            var exp = Config.GetExporters().OfType<HistogramExporter>().Single();
+            exp.Info = plotInfo;
         }
     }
 
     /// <summary>
     /// Export a histogram plot.
     /// </summary>
-    public sealed class TimelineAttribute : ExporterConfigBaseAttribute
+    public sealed class TimelineAttribute : PlotBaseAttribute
     {
         /// <summary>
         ///  Initializes a new instance of the <see cref="TimelineAttribute"/> class.
         /// </summary>
         public TimelineAttribute()
             : base(new TimelineExporter())
+        {
+            var exp = Config.GetExporters().OfType<TimelineExporter>().Single();
+            exp.Info = plotInfo;
+        }
+    }
+
+    /// <summary>
+    /// Base class for plot attributes.
+    /// </summary>
+    public abstract class PlotBaseAttribute : ExporterConfigBaseAttribute
+    {
+        internal readonly PlotInfo plotInfo = new PlotInfo();
+
+        /// <summary>
+        /// Gets or sets the width of the plot.
+        /// </summary>
+        public int Width
+        {
+            get => plotInfo.Width;
+            set => plotInfo.Width = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the height of the plot.
+        /// </summary>
+        public int Height
+        {
+            get => plotInfo.Height;
+            set => plotInfo.Height = value;
+        }
+
+        internal PlotBaseAttribute(IExporter exporter)
+            : base(exporter)
         {
         }
     }

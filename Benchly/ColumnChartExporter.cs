@@ -67,7 +67,7 @@ namespace Benchly
                 .WithoutVerticalGridlines()
                 .WithLayout(title);
 
-            chart.SaveSVG(file, Width: 1000, Height: 600);
+            chart.SaveSVG(file, Width: Info.Width, Height: Info.Height);
 
             return new[] { file + ".svg" };
         }
@@ -137,7 +137,7 @@ namespace Benchly
                 .WithoutVerticalGridlines()
                 .WithAxisTitles("Time (ms)")
                 .WithLayout(title)
-                .SaveSVG(file, Width: 1000, Height: 600);
+                .SaveSVG(file, Width: Info.Width, Height: Info.Height);
 
             return new[] { file + ".svg" };
         }

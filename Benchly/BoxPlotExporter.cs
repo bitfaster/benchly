@@ -46,7 +46,7 @@ namespace Benchly
                 .WithAxisTitles($"Time ({timeUnit})")
                 .WithLayout(title)
                 .WithGroupBox()
-                .SaveSVG(file, Width: 1000, Height: 600);
+                .SaveSVG(file, Width: Info.Width, Height: Info.Height);
 
             return new[] { file + ".svg" };
         }
