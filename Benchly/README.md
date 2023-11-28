@@ -1,10 +1,10 @@
-# 📈 benchly 
+# 📊 benchly 
 
 Generate plots for [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) using [Plotly.NET](https://github.com/plotly/Plotly.NET/).
 
 # Getting started
 
-Add plot exporter attributes to your benchmark, similar to the built in exporters:
+Add plot exporter attributes to your benchmark:
 
 ```cs
     [BoxPlot(Title = "Box Plot", Colors = "skyblue,slateblue")]
@@ -32,7 +32,7 @@ Add plot exporter attributes to your benchmark, similar to the built in exporter
     }
 ```
 
-Plots are then generated in the results directory when running the benchmarks:
+Plots are written to the results directory after running the benchmarks, like the built in exporters:
 
 ```
   // * Export *
