@@ -23,12 +23,22 @@ namespace Benchly
 
             try
             {
-                return split.Select(x => Color.fromString(x)).ToArray();
+                return split.Select(x => ParseColor(x)).ToArray();
             }
             catch 
             {
                 return Array.Empty<Color>();
             }
+        }
+
+        private Color ParseColor(string x)
+        { 
+            if (x.StartsWith("#"))
+            {
+                return Color.fromHex(x);
+            }
+
+            return Color.fromString(x);
         }
     }
 }
