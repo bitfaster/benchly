@@ -8,6 +8,10 @@ namespace Benchly
 
         public string Colors { get; set; }
 
+        public int Width { get; set; } = 1000;
+
+        public int Height { get; set; } = 600;
+
         internal Color[] GetColors()
         {
             if (string.IsNullOrEmpty(Colors))

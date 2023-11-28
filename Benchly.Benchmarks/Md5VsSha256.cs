@@ -4,10 +4,10 @@ using System.Security.Cryptography;
 
 namespace Benchly.Benchmarks
 {
-    [BoxPlot(Title = "Box Plot", Colors = "skyblue,slateblue")]
-    [ColumnChart(Title = "Column Chart", Colors = "skyblue,slateblue")]
-    [Histogram]
-    [Timeline]
+    [BoxPlot(Title = "Box Plot", Colors = "skyblue,slateblue", Height = 800)]
+    [ColumnChart(Title = "Column Chart", Colors = "skyblue,slateblue", Height =800)]
+    [Histogram(Width=500)]
+    [Timeline(Width = 500)]
     [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]
     public class Md5VsSha256
     {
