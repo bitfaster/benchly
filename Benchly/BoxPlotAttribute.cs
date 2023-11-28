@@ -41,7 +41,7 @@ namespace Benchly
     /// <summary>
     /// Export a bar plot.
     /// </summary>
-    public sealed class BarPlotAttribute : ExporterConfigBaseAttribute
+    public sealed class ColumnChartAttribute : ExporterConfigBaseAttribute
     {
         private readonly PlotInfo plotInfo = new PlotInfo();
 
@@ -64,12 +64,12 @@ namespace Benchly
         }
 
         /// <summary>
-        ///  Initializes a new instance of the <see cref="BarPlotAttribute"/> class.
+        ///  Initializes a new instance of the <see cref="ColumnChartAttribute"/> class.
         /// </summary>
-        public BarPlotAttribute()
-            : base(new BarPlotExporter())
+        public ColumnChartAttribute()
+            : base(new ColumnChartExporter())
         {
-            var exp = Config.GetExporters().OfType<BarPlotExporter>().Single();
+            var exp = Config.GetExporters().OfType<ColumnChartExporter>().Single();
             exp.Info = plotInfo;
         }
     }

@@ -6,7 +6,7 @@ Generate plots for [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) 
 
 Benchly supports 4 different plots:
 
-- Bar plot: shows the relative latency of results.
+- Column chart: shows the relative latency of results.
 - Box plot: shows the relative the variability of results.
 - Histogram: shows distribution of results.
 - Timeline: shows the latency trend through time.
@@ -25,7 +25,7 @@ Add plot exporter attributes to your benchmark:
 
 ```cs
     [BoxPlot(Title = "Box Plot", Colors = "skyblue,slateblue")]
-    [BarPlot(Title = "Bar Plot", Colors = "skyblue,slateblue")]
+    [ColumnChart(Title = "Column Chart", Colors = "skyblue,slateblue")]
     [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]
     public class Md5VsSha256
     {
