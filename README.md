@@ -7,11 +7,9 @@ Generate plots for [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) 
 Benchly supports 4 different plots:
 
 - Column chart: shows the relative latency of results.
-- Box plot: shows the relative the variability of results.
+- Box plot: shows the relative variability of results.
 - Histogram: shows distribution of results.
 - Timeline: shows the latency trend through time.
-
-Benchly uses Plotly.NET. Ironically for a performance measurement tool, whilst convenient this is not a performant approach to generating plots. Internally, FSharp invokes plotly.js running inside a headless instance of chromium managed by pupetteer. The first time benchly runs, chromium will be downloaded into the bin directory causing short delay.
 
 # Getting started
     
@@ -55,6 +53,10 @@ Plots are written to the results directory after running the benchmarks, like th
 
 ![Benchly Benchmarks Md5VsSha256-boxplot](https://github.com/bitfaster/benchly/assets/12851828/f906002c-57cb-4d82-9fca-266160efa5e9)
 ![Benchly Benchmarks Md5VsSha256-barplot](https://github.com/bitfaster/benchly/assets/12851828/c9b2abe3-c9a3-4bfa-8678-7fe11dca468a)
+
+# Under the hood
+
+Benchly uses Plotly.NET. Ironically for a performance measurement tool, whilst convenient this is not a performant approach to generating plots. Internally, FSharp invokes plotly.js running inside a headless instance of chromium managed by pupetteer. The first time benchly runs, chromium will be downloaded into the bin directory causing short delay.
 
 # Credits
 
