@@ -2,7 +2,7 @@
 
 Generate plots for [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) using [Plotly.NET](https://github.com/plotly/Plotly.NET/).
 
-[![NuGet version](https://badge.fury.io/nu/benchly.svg)](https://badge.fury.io/nu/benchly) ![Nuget](https://img.shields.io/nuget/dt/benchly) 
+[![NuGet version](https://badge.fury.io/nu/Benchly.svg)](https://badge.fury.io/nu/benchly) ![Nuget](https://img.shields.io/nuget/dt/benchly) 
 
 Benchly supports 4 different plots:
 
