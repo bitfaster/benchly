@@ -1,17 +1,12 @@
 ﻿using FluentAssertions;
 using Plotly.NET;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Benchly.UnitTests
 {
     public class PlotInfoTests
     {
         [Fact]
-        public void WhenColorIsStringItIsMapped()
+        public void WhenColorIsInvalidStringGetColorsIsEmpty()
         { 
             var info = new PlotInfo();
             info.Colors = "foo";
@@ -19,8 +14,25 @@ namespace Benchly.UnitTests
             var colors = info.GetColors();
 
             colors.Should().NotBeNull();
+            colors.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void WhenColorIsValidStringGetColorsReturnsColor()
+        {
+            var info = new PlotInfo();
+            info.Colors = "firebrick";
+
+            var colors = info.GetColors();
+
+            colors.Should().NotBeNull();
             colors.Length.Should().Be(1);
-            colors[0].Value.Should().Be("foo");
+            var argb = colors[0].Value.Should().BeOfType<ARGB>().Subject;
+
+            argb.A.Should().Be(255);
+            argb.R.Should().Be(178);
+            argb.G.Should().Be(34);
+            argb.B.Should().Be(34);
         }
 
         [Fact]

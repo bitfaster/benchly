@@ -1,10 +1,12 @@
 ﻿using BenchmarkDotNet.Exporters;
-using BenchmarkDotNet.Reports;
-using Plotly.NET.ImageExport;
 using BenchmarkDotNet.Loggers;
+using BenchmarkDotNet.Reports;
+
 using Plotly.NET;
+using Plotly.NET.ImageExport;
 using Plotly.NET.LayoutObjects;
 using static Plotly.NET.StyleParam;
+
 using Microsoft.FSharp.Core;
 
 namespace Benchly
@@ -22,24 +24,120 @@ namespace Benchly
                 return Array.Empty<string>();
             }
 
-            if (summary.Reports[0].BenchmarkCase.HasParameters)
+            return Info.OutputMode switch
             {
-                int paramCount = summary.Reports[0].BenchmarkCase.Parameters.Count;
-
-                if (paramCount == 1)
-                {
-                    return OneParameter(summary);
-                }
-            }
-
-            return NoParameter(summary);
+                OutputMode.PerMethod => PerMethod(summary),
+                OutputMode.PerJob => PerJob(summary),
+                OutputMode.Combined => Combined(summary),
+                _ => Array.Empty<string>(),
+            };
         }
 
         public void ExportToLog(Summary summary, ILogger logger)
         {
         }
 
-        private IEnumerable<string> NoParameter(Summary summary)
+        // Revisit this in terms of params:
+        // This would make most sense if used with params, so that you
+        // could look at the results for all param values for each method
+        private IEnumerable<string> PerMethod(Summary summary)
+        {
+            var files = new List<string>();
+
+            foreach (var report in summary.Reports) 
+            {
+                if (!report.Success)
+                {
+                    continue;
+                }
+
+                int paramCount = report.BenchmarkCase.Parameters.Count;
+
+                var title = this.Info.Title ?? summary.Title;
+                var fileSlug = paramCount == 0
+                    ? report.BenchmarkCase.Job.ResolvedId + "-" + report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo
+                    : report.BenchmarkCase.Job.ResolvedId + "-" + report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo + "-" + report.BenchmarkCase.Parameters.PrintInfo;
+
+                fileSlug += "-columnchart";
+                var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + fileSlug);
+
+                var mean = new[] { ConvertNanosToMs(report.ResultStatistics.Mean) };
+                var name = report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo;
+
+                Chart2D.Chart.Column<double, string, string, double, double>(mean, Name: name)
+                    .WithAxisTitles("Time (ms)")
+                    .WithoutVerticalGridlines()
+                    .WithLayout(title)
+                    .SaveSVG(file, Width: Info.Width, Height: Info.Height);
+
+                files.Add(file + ".svg");
+            }
+            return files;
+        }
+        private IEnumerable<string> PerJob(Summary summary)
+        {
+            // don't support params for now
+            if (summary.Reports[0].BenchmarkCase.HasParameters)
+            {
+                return Array.Empty<string>();
+            }
+
+            var files = new List<string>();
+
+            var jobs = summary.Reports.Select(r => new
+            {
+                job = r.BenchmarkCase.Job.ResolvedId,
+                name = r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo,
+                mean = r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0
+            }).GroupBy(r => r.job);
+
+            foreach (var job in jobs)
+            {
+                var title = this.Info.Title ?? summary.Title;
+                var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-" + job.Key + "-columnchart");
+
+                var colors = ColorMap.GetColorList(Info);
+
+                // make 1 chart per column so that we can color by bar index. Legend is disabled since it is not needed.
+                var charts = job
+                    .Select((j, i) => Chart2D.Chart.Column<double, string, string, double, double>(
+                        new[] { j.mean }, 
+                        new[] { j.name }, 
+                        Name: job.Key, 
+                        MarkerColor: colors[i % colors.Length])
+                    .WithLegendGroup(job.Key, false));
+
+                Chart.Combine(charts)
+                    .WithAxisTitles("Time (ms)")
+                    .WithoutVerticalGridlines()
+                    .WithLayout(title)
+                    .SaveSVG(file, Width: Info.Width, Height: Info.Height);
+
+                files.Add(file + ".svg");
+            }
+
+            return files;
+        }
+
+        private IEnumerable<string> Combined(Summary summary)
+        {
+            if (summary.Reports[0].BenchmarkCase.HasParameters)
+            {
+                int paramCount = summary.Reports[0].BenchmarkCase.Parameters.Count;
+
+                if (paramCount == 1)
+                {
+                    return OneParameterCombined(summary);
+                }
+
+                // we only support 0 or 1 params
+                return Array.Empty<string>();
+            }
+
+            return NoParameterCombined(summary);
+        }
+
+        private IEnumerable<string> NoParameterCombined(Summary summary)
         {
             var title = this.Info.Title ?? summary.Title;
             var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-columnchart");
@@ -72,7 +170,7 @@ namespace Benchly
             return new[] { file + ".svg" };
         }
 
-        private IEnumerable<string> OneParameter(Summary summary)
+        private IEnumerable<string> OneParameterCombined(Summary summary)
         {
             var title = this.Info.Title ?? summary.Title;
             var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-columnchart");
@@ -112,7 +210,6 @@ namespace Benchly
             }
 
             // https://github.com/plotly/Plotly.NET/issues/387
-            // The alignment of this isn't 100% correct. Another approach may be to give each sub chart an x axis title
             double xWidth = 1.0d / byParam.Count();
             double xMidpoint = xWidth / 2.0d;
             double[] xs = byParam.Select((_, index) => xMidpoint + (xWidth * index)).ToArray();

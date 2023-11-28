@@ -4,6 +4,27 @@ using BenchmarkDotNet.Exporters;
 namespace Benchly
 {
     /// <summary>
+    /// The chart output mode.
+    /// </summary>
+    public enum OutputMode
+    {
+        /// <summary>
+        /// Output a chart per benchmark method.
+        /// </summary>
+        PerMethod,
+
+        /// <summary>
+        /// Output a chart per benchmark job. This groups methods by job.
+        /// </summary>
+        PerJob,
+
+        /// <summary>
+        /// Output a combined chart, showing all jobs and methods.
+        /// </summary>
+        Combined
+    }
+
+    /// <summary>
     /// Export a box plot.
     /// </summary>
     public sealed class BoxPlotAttribute : PlotBaseAttribute
@@ -58,6 +79,15 @@ namespace Benchly
         {
             get => plotInfo.Colors;
             set => plotInfo.Colors = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the output mode.
+        /// </summary>
+        public OutputMode Output
+        {
+            get => plotInfo.OutputMode;
+            set => plotInfo.OutputMode = value;
         }
 
         /// <summary>
