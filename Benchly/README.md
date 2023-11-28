@@ -8,7 +8,7 @@ Add plot exporter attributes to your benchmark:
 
 ```cs
     [BoxPlot(Title = "Box Plot", Colors = "skyblue,slateblue")]
-    [BarPlot(Title = "Bar Plot", Colors = "skyblue,slateblue")]
+    [ColumnChart(Title = "Column Chart", Colors = "skyblue,slateblue")]
     [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]
     public class Md5VsSha256
     {
@@ -40,5 +40,5 @@ Plots are written to the results directory after running the benchmarks, like th
   BenchmarkDotNet.Artifacts\results\Benchly.Benchmarks.Md5VsSha256-report-github.md
   BenchmarkDotNet.Artifacts\results\Benchly.Benchmarks.Md5VsSha256-report.html
   BenchmarkDotNet.Artifacts\results\Benchly.Benchmarks.Md5VsSha256-boxplot.svg
-  BenchmarkDotNet.Artifacts\results\Benchly.Benchmarks.Md5VsSha256-barplot.svg
+  BenchmarkDotNet.Artifacts\results\Benchly.Benchmarks.Md5VsSha256-columnchart.svg
 ```

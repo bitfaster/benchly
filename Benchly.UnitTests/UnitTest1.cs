@@ -25,12 +25,12 @@ namespace Benchly.UnitTests
         {
             var boxPlotExporter = new BoxPlotExporter();
             boxPlotExporter.Info.Title = "Box Plot";
-            var barPlotExporter = new BarPlotExporter();
-            barPlotExporter.Info.Title = "Bar Plot";
+            var columnChartExporter = new ColumnChartExporter();
+            columnChartExporter.Info.Title = "Column Chart";
             var histExporter = new HistogramExporter();
             var timelineExporter = new TimelineExporter();
             var files1 = boxPlotExporter.ExportToFiles(summary, NullLogger.Instance);
-            var files2 = barPlotExporter.ExportToFiles(summary, NullLogger.Instance);
+            var files2 = columnChartExporter.ExportToFiles(summary, NullLogger.Instance);
             var files3 = histExporter.ExportToFiles(summary, NullLogger.Instance);
             var files4 = timelineExporter.ExportToFiles(summary, NullLogger.Instance);
         }
