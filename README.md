@@ -1,6 +1,6 @@
 # 📊 benchly 
 
-Generate plots for [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) using [Plotly.NET](https://github.com/plotly/Plotly.NET/).
+Use Benchly to automatically export graphical [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) results without installing additional tools such as R. Benchly runs seamlessly as part of benchmark execution and is compatible with GitHub actions. Benchly produces high quality charts using [Plotly.NET](https://github.com/plotly/Plotly.NET/).
 
 [![NuGet version](https://badge.fury.io/nu/Benchly.svg)](https://badge.fury.io/nu/benchly) ![Nuget](https://img.shields.io/nuget/dt/benchly) 
 
