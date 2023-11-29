@@ -57,7 +57,7 @@ namespace Benchly
                 var columnChartData = new TraceInfo()
                 {
                     Keys = new[] { report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo },
-                    Values = new[] { report.Success ? ConvertNanosToMs(report.ResultStatistics.Mean) : 0 }
+                    Values = new[] { report.Success ? report.ResultStatistics.Mean : 0 }
                 };
 
                 ColumnChartRenderer.Render(new[] { columnChartData }, title, file, Info.Width, Info.Height, false);
@@ -80,7 +80,7 @@ namespace Benchly
             {
                 TraceName = r.BenchmarkCase.Job.ResolvedId,
                 Keys = new[] { r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo },
-                Values = new[] { r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0 }
+                Values = new[] { r.Success ? r.ResultStatistics.Mean : 0 }
             }).GroupBy(r => r.TraceName);
 
             var colors = ColorMap.GetColorList(Info);
@@ -127,7 +127,7 @@ namespace Benchly
             {
                 job = r.BenchmarkCase.Job.ResolvedId,
                 name = r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo,
-                mean = r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0
+                mean = r.Success ? r.ResultStatistics.Mean : 0
             })
             .GroupBy(r => r.job)
                 .Select(job => new TraceInfo() { Values = job.Select(j => j.mean).ToArray(), Keys = job.Select(j => j.name).ToArray(), TraceName = job.Key });
@@ -150,7 +150,7 @@ namespace Benchly
                     param = r.BenchmarkCase.Parameters.PrintInfo,
                     job = r.BenchmarkCase.Job.ResolvedId,
                     name = r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo,
-                    mean = r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0
+                    mean = r.Success ? r.ResultStatistics.Mean : 0
                 })
                 .GroupBy(r => r.param)
                 .Select(bp => new SubPlot()
@@ -164,7 +164,7 @@ namespace Benchly
                             Values = j.Select(j => j.mean).ToArray(), 
                             Keys = j.Select(j => j.name).ToArray(),
                         }).ToList()
-                });
+                }).ToList();
 
             var colors2 = ColorMap.GetColorList(Info);
             ColumnChartRenderer.Render(subPlots, title, file, Info.Width, Info.Height, colors2);
@@ -174,9 +174,9 @@ namespace Benchly
 
         // internal measurements are in nanos
         // https://github.com/dotnet/BenchmarkDotNet/blob/e4d37d03c0b1ef14e7bde224970bd0fc547fd95a/src/BenchmarkDotNet/Templates/BuildPlots.R#L63-L75
-        private static double ConvertNanosToMs(double nanos)
-        {
-            return nanos * 0.000001;
-        }
+        //private static double ConvertNanosToMs(double nanos)
+        //{
+        //    return nanos * 0.000001;
+        //}
     }
 }

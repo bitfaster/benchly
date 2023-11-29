@@ -31,7 +31,7 @@ namespace Benchly
     {
         public static void Render(IEnumerable<TraceInfo> traces, string title, string file, int width, int height, bool showLegend)
         {
-            // TODO: pre-process to determine best units
+            var timeUnit = TimeNormalization.Normalize(traces);
 
             var charts = traces
                         .Select((cd, i) => Chart2D.Chart.Column<double, string, string, double, double>(
@@ -42,7 +42,7 @@ namespace Benchly
                         .WithLegendGroup(cd.TraceName, showLegend));
 
             Chart.Combine(charts)
-                    .WithAxisTitles($"Latency (ms)")
+                    .WithAxisTitles($"Latency ({timeUnit})")
                     .WithoutVerticalGridlines()
                     .WithLayout(title)
                     .SaveSVG(file, Width: width, Height: height);
@@ -50,7 +50,7 @@ namespace Benchly
 
         public static void Render(IEnumerable<SubPlot> subPlot, string title, string file, int width, int height, Color[] colors)
         {
-            // TODO: pre-process to determine best units
+            var timeUnit = TimeNormalization.Normalize(subPlot.SelectMany(sp => sp.Traces));
 
             // make a grid with 1 row, n columns, where n is number of params
             // y axis only on first chart
@@ -99,7 +99,7 @@ namespace Benchly
                 .Grid<IEnumerable<GenericChart.GenericChart>>(1, subPlot.Count(), Pattern: pattern).Invoke(gridCharts)
                 .WithAnnotations(annotations)
                 .WithoutVerticalGridlines()
-                .WithAxisTitles("Time (ms)")
+                .WithAxisTitles($"Time ({timeUnit})")
                 .WithLayout(title)
                 .SaveSVG(file, Width: width, Height: height);
         }
