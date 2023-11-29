@@ -7,6 +7,15 @@ namespace Benchly
     {
         private static Color[] defaults = new[] { Color.fromKeyword(ColorKeyword.IndianRed), Color.fromKeyword(ColorKeyword.Salmon) };
 
+        internal static void Fill(IEnumerable<TraceInfo> chartData, Color[] colors)
+        {
+            int i = 0;
+            foreach (TraceInfo data in chartData) 
+            {
+                data.MarkerColor = colors[i++ % colors.Length];
+            }
+        }
+
         internal static Color[] GetColorList(PlotInfo info)
         {
             var colors = info.GetColors();
