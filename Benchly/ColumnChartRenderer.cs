@@ -83,7 +83,7 @@ namespace Benchly
 
             var annotations = subPlot.Select((p, index) => Annotation.init<double, double, string, string, string, string, string, string, string, string>(
                 X: xs[index],
-                Y: -0.1,
+                Y: 1, // -0.1, bottom breaks layout if the x labels are too long
                 XAnchor: StyleParam.XAnchorPosition.Center,
                 ShowArrow: false,
                 YAnchor: StyleParam.YAnchorPosition.Bottom,

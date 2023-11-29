@@ -166,17 +166,10 @@ namespace Benchly
                         }).ToList()
                 }).ToList();
 
-            var colors2 = ColorMap.GetColorList(Info);
-            ColumnChartRenderer.Render(subPlots, title, file, Info.Width, Info.Height, colors2);
+            var colors = ColorMap.GetColorList(Info);
+            ColumnChartRenderer.Render(subPlots, title, file, Info.Width, Info.Height, colors);
 
             return new[] { file + ".svg" };
         }
-
-        // internal measurements are in nanos
-        // https://github.com/dotnet/BenchmarkDotNet/blob/e4d37d03c0b1ef14e7bde224970bd0fc547fd95a/src/BenchmarkDotNet/Templates/BuildPlots.R#L63-L75
-        //private static double ConvertNanosToMs(double nanos)
-        //{
-        //    return nanos * 0.000001;
-        //}
     }
 }
