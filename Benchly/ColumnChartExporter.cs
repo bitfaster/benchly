@@ -2,13 +2,6 @@
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
 
-using Plotly.NET;
-using Plotly.NET.ImageExport;
-using Plotly.NET.LayoutObjects;
-using static Plotly.NET.StyleParam;
-
-using Microsoft.FSharp.Core;
-
 namespace Benchly
 {
     internal class ColumnChartExporter : IExporter
@@ -61,14 +54,14 @@ namespace Benchly
                 fileSlug += "-columnchart";
                 var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + fileSlug);
 
-                var mean = new[] { ConvertNanosToMs(report.ResultStatistics.Mean) };
-                var name = report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo;
+                var columnChartData = new TraceInfo()
+                {
+                    TraceName = null,//report.BenchmarkCase.Job.ResolvedId,
+                    Keys = new[] { report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo },
+                    Values = new[] { report.Success ? ConvertNanosToMs(report.ResultStatistics.Mean) : 0 }
+                };
 
-                Chart2D.Chart.Column<double, string, string, double, double>(mean, Name: name)
-                    .WithAxisTitles("Time (ms)")
-                    .WithoutVerticalGridlines()
-                    .WithLayout(title)
-                    .SaveSVG(file, Width: Info.Width, Height: Info.Height);
+                ColumnChartRenderer.Render(new[] { columnChartData }, title, file, Info.Width, Info.Height, false);
 
                 files.Add(file + ".svg");
             }
@@ -84,34 +77,23 @@ namespace Benchly
 
             var files = new List<string>();
 
-            var jobs = summary.Reports.Select(r => new
+            var charts = summary.Reports.Select(r => new TraceInfo()
             {
-                job = r.BenchmarkCase.Job.ResolvedId,
-                name = r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo,
-                mean = r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0
-            }).GroupBy(r => r.job);
+                TraceName = r.BenchmarkCase.Job.ResolvedId,
+                Keys = new[] { r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo },
+                Values = new[] { r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0 }
+            }).GroupBy(r => r.TraceName);
 
-            foreach (var job in jobs)
+            var colors = ColorMap.GetColorList(Info);
+
+            // make 1 chart per column so that we can color by bar index. Legend is disabled since it is not needed.
+            foreach (var chartData in charts)
             {
                 var title = this.Info.Title ?? summary.Title;
-                var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-" + job.Key + "-columnchart");
+                var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-" + chartData.Key + "-columnchart");
 
-                var colors = ColorMap.GetColorList(Info);
-
-                // make 1 chart per column so that we can color by bar index. Legend is disabled since it is not needed.
-                var charts = job
-                    .Select((j, i) => Chart2D.Chart.Column<double, string, string, double, double>(
-                        new[] { j.mean }, 
-                        new[] { j.name }, 
-                        Name: job.Key, 
-                        MarkerColor: colors[i % colors.Length])
-                    .WithLegendGroup(job.Key, false));
-
-                Chart.Combine(charts)
-                    .WithAxisTitles("Time (ms)")
-                    .WithoutVerticalGridlines()
-                    .WithLayout(title)
-                    .SaveSVG(file, Width: Info.Width, Height: Info.Height);
+                ColorMap.Fill(chartData, colors);
+                ColumnChartRenderer.Render(chartData, title, file, Info.Width, Info.Height, false);
 
                 files.Add(file + ".svg");
             }
@@ -142,30 +124,18 @@ namespace Benchly
             var title = this.Info.Title ?? summary.Title;
             var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-columnchart");
 
-            var charts = new List<GenericChart.GenericChart>();
-
-            var colors = ColorMap.GetJobColors(summary, this.Info);
-
-            var jobs = summary.Reports.Select(r => new
+            var charts = summary.Reports.Select(r => new
             {
                 job = r.BenchmarkCase.Job.ResolvedId,
                 name = r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo,
                 mean = r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0
-            }).GroupBy(r => r.job);
+            })
+            .GroupBy(r => r.job)
+                .Select(job => new TraceInfo() { Values = job.Select(j => j.mean).ToArray(), Keys = job.Select(j => j.name).ToArray(), TraceName = job.Key });
 
-            // For this to group, we must invoke Chart2D.Chart.Column once per group
-            foreach (var job in jobs)
-            {
-                var chart2 = Chart2D.Chart.Column<double, string, string, double, double>(job.Select(j => j.mean), job.Select(j => j.name).ToArray(), Name: job.Key, MarkerColor: colors[job.Key]);
-                charts.Add(chart2);
-            }
-
-            var chart = Chart.Combine(charts)
-                .WithAxisTitles("Time (ms)")
-                .WithoutVerticalGridlines()
-                .WithLayout(title);
-
-            chart.SaveSVG(file, Width: Info.Width, Height: Info.Height);
+            var colors = ColorMap.GetColorList(Info);
+            ColorMap.Fill(charts, colors);
+            ColumnChartRenderer.Render(charts, title, file, Info.Width, Info.Height, true);
 
             return new[] { file + ".svg" };
         }
@@ -175,66 +145,30 @@ namespace Benchly
             var title = this.Info.Title ?? summary.Title;
             var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-columnchart");
 
-            // make a grid with 1 row, n columns, where n is number of params
-            // y axis only on first chart
-            var gridCharts = new List<GenericChart.GenericChart>();
-
-            var colors = ColorMap.GetJobColors(summary, this.Info);
-
-            var byParam = summary.Reports.Select(r => new
-            {
-                param = r.BenchmarkCase.Parameters.PrintInfo,
-                job = r.BenchmarkCase.Job.ResolvedId,
-                name = r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo,
-                mean = r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0
-            }).GroupBy(r => r.param);
-
-            int paramCount = 0;
-            foreach (var param in byParam)
-            {
-                var charts = new List<GenericChart.GenericChart>();
-                var jobs = param.GroupBy(p => p.job);
-
-                // Group the legends, then only show the first for each group
-                // https://stackoverflow.com/questions/60751008/sharing-same-legends-for-subplots-in-plotly
-                foreach (var job in jobs)
+            var subPlots = summary.Reports
+                .Select(r => new
                 {
-                    var chart2 = Chart2D.Chart
-                        .Column<double, string, string, double, double>(job.Select(j => j.mean), job.Select(j => j.name).ToArray(), Name: job.Key, MarkerColor: colors[job.Key])
-                        .WithLegendGroup(job.Key, paramCount == 0);
-                    charts.Add(chart2);
-                }
+                    param = r.BenchmarkCase.Parameters.PrintInfo,
+                    job = r.BenchmarkCase.Job.ResolvedId,
+                    name = r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo,
+                    mean = r.Success ? ConvertNanosToMs(r.ResultStatistics.Mean) : 0
+                })
+                .GroupBy(r => r.param)
+                .Select(bp => new SubPlot()
+                {
+                    Title = bp.Key,
+                    Traces = bp
+                        .GroupBy(p => p.job)
+                        .Select(j => new TraceInfo() 
+                        { 
+                            TraceName = j.Key,
+                            Values = j.Select(j => j.mean).ToArray(), 
+                            Keys = j.Select(j => j.name).ToArray(),
+                        }).ToList()
+                });
 
-                gridCharts.Add(Chart.Combine(charts));
-                paramCount++;
-            }
-
-            // https://github.com/plotly/Plotly.NET/issues/387
-            double xWidth = 1.0d / byParam.Count();
-            double xMidpoint = xWidth / 2.0d;
-            double[] xs = byParam.Select((_, index) => xMidpoint + (xWidth * index)).ToArray();
-
-            var annotations = byParam.Select((p, index) => Annotation.init<double, double, string, string, string, string, string, string, string, string>(
-                X: xs[index],
-                Y: -0.1,
-                XAnchor: StyleParam.XAnchorPosition.Center,
-                ShowArrow: false,
-                YAnchor: StyleParam.YAnchorPosition.Bottom,
-                Text: p.Key.ToString(),
-                XRef: "paper",
-                YRef: "paper"
-            ));
-
-            // this couples all the charts on the same row to have the same y axis
-            var pattern = new FSharpOption<LayoutGridPattern>(LayoutGridPattern.Coupled);
-
-            Chart
-                .Grid<IEnumerable<GenericChart.GenericChart>>(1, byParam.Count(), Pattern: pattern).Invoke(gridCharts)
-                .WithAnnotations(annotations)
-                .WithoutVerticalGridlines()
-                .WithAxisTitles("Time (ms)")
-                .WithLayout(title)
-                .SaveSVG(file, Width: Info.Width, Height: Info.Height);
+            var colors2 = ColorMap.GetColorList(Info);
+            ColumnChartRenderer.Render(subPlots, title, file, Info.Width, Info.Height, colors2);
 
             return new[] { file + ".svg" };
         }

@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
@@ -32,7 +33,9 @@ namespace Benchly.UnitTests
         }
     }
 
-    [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]
+    [MemoryDiagnoser]
+    [DryJob(RuntimeMoniker.Net60)]
+    [DryJob(RuntimeMoniker.Net48)]
     public class Md5VsSha256
     {
         private const int N = 10000;
@@ -55,6 +58,8 @@ namespace Benchly.UnitTests
     }
 
     [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]
+    [DryJob(RuntimeMoniker.Net60)]
+    [DryJob(RuntimeMoniker.Net48)]
     public class Md5VsSha256Params
     {
         private byte[] data;
