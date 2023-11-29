@@ -56,7 +56,6 @@ namespace Benchly
 
                 var columnChartData = new TraceInfo()
                 {
-                    TraceName = null,//report.BenchmarkCase.Job.ResolvedId,
                     Keys = new[] { report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo },
                     Values = new[] { report.Success ? ConvertNanosToMs(report.ResultStatistics.Mean) : 0 }
                 };
