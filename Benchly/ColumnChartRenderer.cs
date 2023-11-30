@@ -1,7 +1,9 @@
-﻿using Microsoft.FSharp.Core;
+﻿using BenchmarkDotNet.Jobs;
+using Microsoft.FSharp.Core;
 using Plotly.NET;
 using Plotly.NET.ImageExport;
 using Plotly.NET.LayoutObjects;
+using System.Collections.Generic;
 using static Plotly.NET.StyleParam;
 
 namespace Benchly
@@ -25,6 +27,57 @@ namespace Benchly
         public string Title { get; set; }
 
         public List<TraceInfo> Traces { get; set; }
+    }
+
+    internal static class SubPlotExt
+    {
+        internal static List<SubPlot> ToPerJob(this List<SubPlot> subPlots, string job)
+        {
+            return subPlots.Select(s => new SubPlot() { Title = s.Title, Traces = s.Traces.Where(t => t.TraceName == job).ToList() }).ToList();
+        }
+
+        internal static List<SubPlot> ToPerMethod(this List<SubPlot> subPlots, string method)
+        {
+            List<SubPlot> perMethod = new List<SubPlot>();
+
+            foreach (var subPlot in subPlots)
+            {
+                var methodSubPlot = new SubPlot();
+
+                // suppress the per plot label
+                methodSubPlot.Title = string.Empty;
+                methodSubPlot.Traces = new List<TraceInfo>();
+
+                foreach (var t in subPlot.Traces)
+                {
+                    
+                    var trace = new TraceInfo() { TraceName = t.TraceName };
+
+                    var values = new List<double>();
+
+                    for (int i = 0; i < t.Values.Length; i++)
+                    { 
+                        if (t.Keys[i] == method)
+                        {
+                            values.Add(t.Values[i]);
+                        }
+                    }
+
+                    // label the x axis using the paremeter name+value
+                    trace.Values = values.ToArray();
+                    trace.Keys = Enumerable.Range(0, trace.Values.Length).Select(_ => subPlot.Title).ToArray();
+
+                    if (trace.Values.Length > 0)
+                    {
+                        methodSubPlot.Traces.Add(trace);
+                    }
+                }
+
+                perMethod.Add(methodSubPlot);
+            }
+
+            return perMethod;
+        }
     }
 
     internal class ColumnChartRenderer

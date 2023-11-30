@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 namespace Benchly.Benchmarks
 {
     [BoxPlot(Title = "Box Plot")]
-    [ColumnChart(Title = "Column Chart ({JOB})", Output=OutputMode.PerJob)]
+    [ColumnChart(Title = "Hashing ({METHOD})", Output=OutputMode.PerMethod)]
     [Histogram]
     [Timeline]
     [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]

@@ -38,6 +38,29 @@ namespace Benchly
         {
             var files = new List<string>();
 
+            if (summary.Reports[0].BenchmarkCase.HasParameters)
+            {
+                int paramCount = summary.Reports[0].BenchmarkCase.Parameters.Count;
+
+                if (paramCount == 1)
+                {
+                    var subPlots = GetSubPlots(summary);
+
+                    foreach (var method in summary.Reports.Select(r => r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo).Distinct())
+                    {
+                        var title = TitleFormatter.Format(this.Info, summary, string.Join(",", summary.Reports.Select(r => r.BenchmarkCase.Job.ResolvedId).Distinct()), method);
+                        var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-" + method + "-columnchart");
+                        var methodSubPlots = subPlots.ToPerMethod(method);
+                        ColumnChartRenderer.Render(methodSubPlots, title, file, Info.Width, Info.Height, ColorMap.GetColorList(Info));
+                        files.Add(file + ".svg");
+                    }
+
+                    return files;
+                }
+
+                return Array.Empty<string>();
+            }
+
             foreach (var report in summary.Reports) 
             {
                 if (!report.Success)
@@ -47,7 +70,7 @@ namespace Benchly
 
                 int paramCount = report.BenchmarkCase.Parameters.Count;
 
-                var title = TitleFormatter.Format(this.Info, summary, report.BenchmarkCase.Job.ResolvedId);
+                var title = TitleFormatter.Format(this.Info, summary, report.BenchmarkCase.Job.ResolvedId, report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo);
                 var fileSlug = paramCount == 0
                     ? report.BenchmarkCase.Job.ResolvedId + "-" + report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo
                     : report.BenchmarkCase.Job.ResolvedId + "-" + report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo + "-" + report.BenchmarkCase.Parameters.PrintInfo;
@@ -83,7 +106,7 @@ namespace Benchly
                     {
                         var title = TitleFormatter.Format(this.Info, summary, job);
                         var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-" + job + "-columnchart");
-                        var jobSubPlots = subPlots.Select(s => new SubPlot() { Title = s.Title, Traces = s.Traces.Where(t => t.TraceName == job).ToList() });
+                        var jobSubPlots = subPlots.ToPerJob(job);
                         ColumnChartRenderer.Render(jobSubPlots, title, file, Info.Width, Info.Height, ColorMap.GetColorList(Info));
                         files.Add(file + ".svg");
                     }
