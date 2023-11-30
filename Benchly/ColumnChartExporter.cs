@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
+using Plotly.NET;
 
 namespace Benchly
 {
@@ -46,7 +47,7 @@ namespace Benchly
 
                 int paramCount = report.BenchmarkCase.Parameters.Count;
 
-                var title = this.Info.Title ?? summary.Title;
+                var title = TitleFormatter.Format(this.Info, summary, report.BenchmarkCase.Job.ResolvedId);
                 var fileSlug = paramCount == 0
                     ? report.BenchmarkCase.Job.ResolvedId + "-" + report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo
                     : report.BenchmarkCase.Job.ResolvedId + "-" + report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo + "-" + report.BenchmarkCase.Parameters.PrintInfo;
@@ -68,13 +69,30 @@ namespace Benchly
         }
         private IEnumerable<string> PerJob(Summary summary)
         {
-            // don't support params for now
+            var files = new List<string>();
+
             if (summary.Reports[0].BenchmarkCase.HasParameters)
             {
+                int paramCount = summary.Reports[0].BenchmarkCase.Parameters.Count;
+
+                if (paramCount == 1)
+                {
+                    var subPlots = GetSubPlots(summary);
+
+                    foreach (var job in summary.Reports.Select(r => r.BenchmarkCase.Job.ResolvedId).Distinct())
+                    {
+                        var title = TitleFormatter.Format(this.Info, summary, job);
+                        var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-" + job + "-columnchart");
+                        var jobSubPlots = subPlots.Select(s => new SubPlot() { Title = s.Title, Traces = s.Traces.Where(t => t.TraceName == job).ToList() });
+                        ColumnChartRenderer.Render(jobSubPlots, title, file, Info.Width, Info.Height, ColorMap.GetColorList(Info));
+                        files.Add(file + ".svg");
+                    }
+
+                    return files;
+                }
+
                 return Array.Empty<string>();
             }
-
-            var files = new List<string>();
 
             var charts = summary.Reports.Select(r => new TraceInfo()
             {
@@ -86,13 +104,13 @@ namespace Benchly
             var colors = ColorMap.GetColorList(Info);
 
             // make 1 chart per column so that we can color by bar index. Legend is disabled since it is not needed.
-            foreach (var chartData in charts)
+            foreach (var chart in charts)
             {
-                var title = this.Info.Title ?? summary.Title;
-                var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-" + chartData.Key + "-columnchart");
+                var title = TitleFormatter.Format(this.Info, summary, chart.Key);
+                var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-" + chart.Key + "-columnchart");
 
-                ColorMap.Fill(chartData, colors);
-                ColumnChartRenderer.Render(chartData, title, file, Info.Width, Info.Height, false);
+                ColorMap.Fill(chart, colors);
+                ColumnChartRenderer.Render(chart, title, file, Info.Width, Info.Height, false);
 
                 files.Add(file + ".svg");
             }
@@ -120,7 +138,7 @@ namespace Benchly
 
         private IEnumerable<string> NoParameterCombined(Summary summary)
         {
-            var title = this.Info.Title ?? summary.Title;
+            var title = TitleFormatter.Format(this.Info, summary, string.Join(",", summary.Reports.Select(r => r.BenchmarkCase.Job.ResolvedId).Distinct()));
             var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-columnchart");
 
             var charts = summary.Reports.Select(r => new
@@ -141,10 +159,19 @@ namespace Benchly
 
         private IEnumerable<string> OneParameterCombined(Summary summary)
         {
-            var title = this.Info.Title ?? summary.Title;
+            var title = TitleFormatter.Format(this.Info, summary, string.Join(",", summary.Reports.Select(r => r.BenchmarkCase.Job.ResolvedId).Distinct()));
             var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-columnchart");
 
-            var subPlots = summary.Reports
+            var subPlots = GetSubPlots(summary);
+            var colors = ColorMap.GetColorList(Info);
+            ColumnChartRenderer.Render(subPlots, title, file, Info.Width, Info.Height, colors);
+
+            return new[] { file + ".svg" };
+        }
+
+        private List<SubPlot> GetSubPlots(Summary summary)
+        {
+            return summary.Reports
                 .Select(r => new
                 {
                     param = r.BenchmarkCase.Parameters.PrintInfo,
@@ -158,18 +185,13 @@ namespace Benchly
                     Title = bp.Key,
                     Traces = bp
                         .GroupBy(p => p.job)
-                        .Select(j => new TraceInfo() 
-                        { 
+                        .Select(j => new TraceInfo()
+                        {
                             TraceName = j.Key,
-                            Values = j.Select(j => j.mean).ToArray(), 
+                            Values = j.Select(j => j.mean).ToArray(),
                             Keys = j.Select(j => j.name).ToArray(),
                         }).ToList()
                 }).ToList();
-
-            var colors = ColorMap.GetColorList(Info);
-            ColumnChartRenderer.Render(subPlots, title, file, Info.Width, Info.Height, colors);
-
-            return new[] { file + ".svg" };
         }
     }
 }

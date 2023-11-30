@@ -52,6 +52,8 @@ namespace Benchly
         {
             var timeUnit = TimeNormalization.Normalize(subPlot.SelectMany(sp => sp.Traces));
 
+            bool singleJob = subPlot.SelectMany(sp => sp.Traces).Select(t => t.TraceName).Distinct().Count() == 1;
+
             // make a grid with 1 row, n columns, where n is number of params
             // y axis only on first chart
             var gridCharts = new List<GenericChart.GenericChart>();
@@ -68,7 +70,7 @@ namespace Benchly
                 {
                     var chart2 = Chart2D.Chart
                         .Column<double, string, string, double, double>(trace.Values, trace.Keys, Name: trace.TraceName, MarkerColor: trace.MarkerColor)
-                        .WithLegendGroup(trace.TraceName, paramCount == 0);
+                        .WithLegendGroup(trace.TraceName, paramCount == 0 && !singleJob);
                     charts.Add(chart2);
                 }
 
