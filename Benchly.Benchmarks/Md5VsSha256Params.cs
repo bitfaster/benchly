@@ -5,10 +5,10 @@ using System.Security.Cryptography;
 namespace Benchly.Benchmarks
 {
     [BoxPlot(Title = "Box Plot")]
-    [ColumnChart(Title = "Column Chart ({JOB})", Output=OutputMode.Combined)]
+    [ColumnChart(Title = "Column Chart ({JOB})", Output=OutputMode.PerJob)]
     [Histogram]
     [Timeline]
-    [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60)]
+    [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]
     public class Md5VsSha256Params
     {
         private byte[] data;

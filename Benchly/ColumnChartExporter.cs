@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
+using Plotly.NET;
 
 namespace Benchly
 {
@@ -68,13 +69,30 @@ namespace Benchly
         }
         private IEnumerable<string> PerJob(Summary summary)
         {
-            // don't support params for now
+            var files = new List<string>();
+
             if (summary.Reports[0].BenchmarkCase.HasParameters)
             {
+                int paramCount = summary.Reports[0].BenchmarkCase.Parameters.Count;
+
+                if (paramCount == 1)
+                {
+                    var subPlots = GetSubPlots(summary);
+
+                    foreach (var job in summary.Reports.Select(r => r.BenchmarkCase.Job.ResolvedId).Distinct())
+                    {
+                        var title = TitleFormatter.Format(this.Info, summary, job);
+                        var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-" + job + "-columnchart");
+                        var jobSubPlots = subPlots.Select(s => new SubPlot() { Title = s.Title, Traces = s.Traces.Where(t => t.TraceName == job).ToList() });
+                        ColumnChartRenderer.Render(jobSubPlots, title, file, Info.Width, Info.Height, ColorMap.GetColorList(Info));
+                        files.Add(file + ".svg");
+                    }
+
+                    return files;
+                }
+
                 return Array.Empty<string>();
             }
-
-            var files = new List<string>();
 
             var charts = summary.Reports.Select(r => new TraceInfo()
             {
