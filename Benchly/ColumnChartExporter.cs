@@ -48,7 +48,7 @@ namespace Benchly
 
                     foreach (var method in summary.Reports.Select(r => r.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo).Distinct())
                     {
-                        var title = TitleFormatter.Format(this.Info, summary, method);
+                        var title = TitleFormatter.Format(this.Info, summary, string.Join(",", summary.Reports.Select(r => r.BenchmarkCase.Job.ResolvedId).Distinct()), method);
                         var file = Path.Combine(summary.ResultsDirectoryPath, ExporterBase.GetFileName(summary) + "-" + method + "-columnchart");
                         var methodSubPlots = subPlots.ToPerMethod(method);
                         ColumnChartRenderer.Render(methodSubPlots, title, file, Info.Width, Info.Height, ColorMap.GetColorList(Info));
@@ -70,7 +70,7 @@ namespace Benchly
 
                 int paramCount = report.BenchmarkCase.Parameters.Count;
 
-                var title = TitleFormatter.Format(this.Info, summary, report.BenchmarkCase.Job.ResolvedId);
+                var title = TitleFormatter.Format(this.Info, summary, report.BenchmarkCase.Job.ResolvedId, report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo);
                 var fileSlug = paramCount == 0
                     ? report.BenchmarkCase.Job.ResolvedId + "-" + report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo
                     : report.BenchmarkCase.Job.ResolvedId + "-" + report.BenchmarkCase.Descriptor.WorkloadMethodDisplayInfo + "-" + report.BenchmarkCase.Parameters.PrintInfo;

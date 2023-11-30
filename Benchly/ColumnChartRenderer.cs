@@ -43,11 +43,14 @@ namespace Benchly
             foreach (var subPlot in subPlots)
             {
                 var methodSubPlot = new SubPlot();
-                methodSubPlot.Title = subPlot.Title;
+
+                // suppress the per plot label
+                methodSubPlot.Title = string.Empty;
                 methodSubPlot.Traces = new List<TraceInfo>();
 
                 foreach (var t in subPlot.Traces)
                 {
+                    
                     var trace = new TraceInfo() { TraceName = t.TraceName };
 
                     var values = new List<double>();
@@ -60,8 +63,9 @@ namespace Benchly
                         }
                     }
 
+                    // label the x axis using the paremeter name+value
                     trace.Values = values.ToArray();
-                    trace.Keys = Enumerable.Range(0, trace.Values.Length).Select(_ => method).ToArray();
+                    trace.Keys = Enumerable.Range(0, trace.Values.Length).Select(_ => subPlot.Title).ToArray();
 
                     if (trace.Values.Length > 0)
                     {
