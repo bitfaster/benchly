@@ -8,7 +8,7 @@ namespace Benchly.Benchmarks
     [ColumnChart(Title = "Hashing ({METHOD})", Output=OutputMode.PerMethod)]
     [Histogram]
     [Timeline]
-    [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]
+    [MemoryDiagnoser, ShortRunJob(RuntimeMoniker.Net60), ShortRunJob(RuntimeMoniker.Net48)]
     public class Md5VsSha256Params
     {
         private byte[] data;

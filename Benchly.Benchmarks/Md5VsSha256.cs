@@ -8,7 +8,7 @@ namespace Benchly.Benchmarks
     [ColumnChart(Title = "Column Chart ({JOB})", Colors = "skyblue,slateblue", Height =800, Output = OutputMode.PerJob)]
     [Histogram(Width=500)]
     [Timeline(Width = 500)]
-    [MemoryDiagnoser, SimpleJob(RuntimeMoniker.Net60), SimpleJob(RuntimeMoniker.Net48)]
+    [MemoryDiagnoser, ShortRunJob(RuntimeMoniker.Net60), ShortRunJob(RuntimeMoniker.Net48)]
     public class Md5VsSha256
     {
         private const int N = 10000;
