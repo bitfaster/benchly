@@ -109,13 +109,13 @@ namespace Benchly
 
             // make a grid with 1 row, n columns, where n is number of params
             // y axis only on first chart
-            var gridCharts = new List<GenericChart.GenericChart>();
+            var gridCharts = new List<GenericChart>();
 
             int paramCount = 0;
             foreach (var plot in subPlot)
             {
                 ColorMap.Fill(plot.Traces, colors);
-                var charts = new List<GenericChart.GenericChart>();
+                var charts = new List<GenericChart>();
 
                 // Group the legends, then only show the first for each group
                 // https://stackoverflow.com/questions/60751008/sharing-same-legends-for-subplots-in-plotly
@@ -151,7 +151,7 @@ namespace Benchly
             var pattern = new FSharpOption<LayoutGridPattern>(LayoutGridPattern.Coupled);
 
             Chart
-                .Grid<IEnumerable<GenericChart.GenericChart>>(1, subPlot.Count(), Pattern: pattern).Invoke(gridCharts)
+                .Grid<IEnumerable<string>, IEnumerable<GenericChart>>(1, subPlot.Count(), Pattern: pattern).Invoke(gridCharts)
                 .WithAnnotations(annotations)
                 .WithoutVerticalGridlines()
                 .WithAxisTitles($"Time ({timeUnit})")

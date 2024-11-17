@@ -32,7 +32,7 @@ namespace Benchly
 
             // https://www.geeksforgeeks.org/how-to-create-grouped-box-plot-in-plotly/
             // For this to group, we must invoke Chart2D.Chart.BoxPlot once per group
-            var charts = new List<GenericChart.GenericChart>();
+            var charts = new List<GenericChart>();
             foreach (var job in jobs)
             {
                 var names = job.SelectMany(p => p.Names).ToArray();
